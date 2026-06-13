@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment configurations
+.env
+
+# Uploaded template files and logos
+uploads/*
+!uploads/.gitkeep
+
+# System/IDE settings
+.DS_Store
+.idea/
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

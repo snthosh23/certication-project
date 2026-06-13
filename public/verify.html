@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Certificate - Authentication Status</title>
+  
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    .verify-page-wrapper {
+      max-width: 800px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+    
+    .status-banner {
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-glass);
+      transition: var(--transition);
+    }
+    
+    .status-banner:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .status-banner.valid {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .status-banner.revoked {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .status-banner.expired {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .status-banner.invalid {
+      background: rgba(100, 116, 139, 0.08);
+      border-color: rgba(100, 116, 139, 0.2);
+    }
+    
+    .status-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      animation: pulseIcon 2s infinite ease-in-out;
+    }
+    
+    .status-banner.valid .status-icon { color: var(--success); }
+    .status-banner.revoked .status-icon { color: var(--danger); }
+    .status-banner.expired .status-icon { color: var(--warning); }
+    .status-banner.invalid .status-icon { color: var(--text-muted); }
+    
+    .status-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .status-desc {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+    
+    .cert-details-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-glass);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .cert-details-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-glass);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.2rem;
+      background: rgba(var(--color-primary-rgb), 0.02);
+    }
+    
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      padding: 2rem;
+    }
+    
+    @media (max-width: 600px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+    
+    .detail-item label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.025em;
+    }
+    
+    .detail-item span {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .actions-bar {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    @keyframes pulseIcon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+        </svg>
+        <span>CertiVerify</span>
+      </a>
+      
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+          <svg class="moon-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+          <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+        </button>
+        <a href="index.html" class="btn btn-secondary">Back to Lookup</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="verify-page-wrapper">
+    <!-- 1. Verification Outcome status card -->
+    <div id="statusBanner" class="status-banner invalid">
+      <div class="status-icon"><i class="fa-solid fa-circle-question"></i></div>
+      <div class="status-title" id="statusTitle">Verifying Certificate</div>
+      <div class="status-desc" id="statusDesc">Querying the database for certificate details...</div>
+    </div>
+
+    <!-- 2. Detailed Certificate fields registry data -->
+    <div id="certDetailsCard" class="cert-details-card" style="display: none;">
+      <div class="cert-details-header">Certificate Registry Entry</div>
+      <div class="details-grid">
+        <div class="detail-item">
+          <label>Certificate ID</label>
+          <span id="fieldCertId">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Recipient Name</label>
+          <span id="fieldName">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Course / Title</label>
+          <span id="fieldCourse">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Organization / Issuer</label>
+          <span id="fieldOrg">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Date of Issue</label>
+          <span id="fieldIssueDate">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Expiry Date</label>
+          <span id="fieldExpiryDate">Never</span>
+        </div>
+        <div class="detail-item">
+          <label>Issuer Authority</label>
+          <span id="fieldIssuer">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Verification Scans</label>
+          <span id="fieldScans">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Actions Button bar -->
+    <div class="actions-bar">
+      <a href="" id="pdfDownloadLink" class="btn btn-primary" style="display: none;">
+        <i class="fa-solid fa-file-pdf"></i> Download PDF Certificate
+      </a>
+      <button id="copyShareBtn" class="btn btn-secondary" style="display: none;">
+        <i class="fa-solid fa-share-nodes"></i> Copy Verification Link
+      </button>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer>
+    <div class="footer-content" style="max-width: 800px;">
+      <div class="footer-logo">CertiVerify Portal</div>
+      <div class="footer-text">&copy; 2026 CertiVerify System. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js" defer></script>
+  <script>
+    // Run verification on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const certId = urlParams.get('id');
+      
+      if (!certId) {
+        showInvalidBanner("Missing Certificate ID", "Provide a valid verification URL query parameters.");
+        return;
+      }
+      
+      // Call public verification API
+      fetch(`/api/certificates/verify/${certId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            renderCertificateDetails(data.certificate, data.valid, data.status);
+          } else {
+            showInvalidBanner("Invalid Certificate ID", data.message || "This credential is not registered in our system.");
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          showInvalidBanner("Connection Error", "Could not complete lookup registry request. Please try again.");
+        });
+    });
+
+    function showInvalidBanner(title, desc) {
+      const banner = document.getElementById('statusBanner');
+      banner.className = "status-banner revoked"; // styles like error
+      banner.querySelector('.status-icon').innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+      document.getElementById('statusTitle').innerText = title;
+      document.getElementById('statusDesc').innerText = desc;
+    }
+
+    function renderCertificateDetails(cert, isValid, status) {
+      const banner = document.getElementById('statusBanner');
+      const title = document.getElementById('statusTitle');
+      const desc = document.getElementById('statusDesc');
+      const icon = banner.querySelector('.status-icon');
+      
+      if (isValid) {
+        banner.className = "status-banner valid";
+        icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        title.innerText = "Authentic Certificate";
+        desc.innerText = "This digital credential has been verified as valid and issued by an authorized registry.";
+      } else if (status === 'Revoked') {
+        banner.className = "status-banner revoked";
+        icon.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
+        title.innerText = "Revoked Certificate";
+        desc.innerText = "This credential was issued but has subsequently been revoked by the issuer.";
+      } else if (status === 'Expired') {
+        banner.className = "status-banner expired";
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        title.innerText = "Expired Certificate";
+        desc.innerText = "This digital credential has expired and is no longer valid.";
+      }
+
+      // Populate Details
+      document.getElementById('fieldCertId').innerText = cert.certificateId;
+      document.getElementById('fieldName').innerText = cert.recipientName;
+      document.getElementById('fieldCourse').innerText = cert.courseName;
+      document.getElementById('fieldOrg').innerText = cert.organization;
+      document.getElementById('fieldIssueDate').innerText = new Date(cert.issueDate).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+      document.getElementById('fieldExpiryDate').innerText = cert.expiryDate 
+        ? new Date(cert.expiryDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'Never (Lifetime Validity)';
+      document.getElementById('fieldIssuer').innerText = cert.issuedBy;
+      document.getElementById('fieldScans').innerText = cert.verificationCount;
+
+      document.getElementById('certDetailsCard').style.display = 'block';
+
+      // Setup Actions
+      const downloadLink = document.getElementById('pdfDownloadLink');
+      downloadLink.href = `/api/certificates/download/${cert.certificateId}`;
+      downloadLink.style.display = 'inline-flex';
+
+      const shareBtn = document.getElementById('copyShareBtn');
+      shareBtn.style.display = 'inline-flex';
+      shareBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href);
+        
+        // Show Toast Notification
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast success';
+        toast.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verification URL copied to clipboard!';
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      });
+    }
+  </script>
+</body>
+</html>

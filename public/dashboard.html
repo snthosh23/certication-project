@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - CertiVerify</title>
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  
+  <!-- FontAwesome & Chart.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <a href="index.html" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          <span>CertiVerify</span>
+        </a>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li>
+          <div class="sidebar-link active" data-tab="tab-overview">
+            <i class="fa-solid fa-chart-line"></i> Overview
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-link" data-tab="tab-certificates">
+            <i class="fa-solid fa-graduation-cap"></i> Certificates
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-link" data-tab="tab-bulk">
+            <i class="fa-solid fa-file-csv"></i> Bulk Issuance
+          </div>
+        </li>
+        <li class="superadmin-only" style="display: none;">
+          <div class="sidebar-link" data-tab="tab-users">
+            <i class="fa-solid fa-users-gear"></i> User Settings
+          </div>
+        </li>
+        <li>
+          <div class="sidebar-link" data-tab="tab-branding">
+            <i class="fa-solid fa-palette"></i> Branding Templates
+          </div>
+        </li>
+        <li class="superadmin-only" style="display: none;">
+          <div class="sidebar-link" data-tab="tab-audit">
+            <i class="fa-solid fa-receipt"></i> System Activity Logs
+          </div>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <div class="sidebar-link" id="logoutBtn" style="color: var(--danger); background: transparent;">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="dash-header">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+        <div class="dash-title">
+          <h1 id="welcomeUser">Welcome back, Admin</h1>
+          <p>Certification status registry dashboard</p>
+        </div>
+        <div class="dash-profile">
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <svg class="moon-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+          </button>
+          <div class="badge role-admin" id="userRoleBadge">Admin</div>
+        </div>
+      </header>
+
+      <!-- Overview Section -->
+      <section class="tab-section" id="tab-overview">
+        <!-- Counters -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>Certificates Issued</h3>
+              <div class="stat-number" id="countIssued">0</div>
+            </div>
+            <div class="stat-icon-box blue">
+              <i class="fa-solid fa-award"></i>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>Verification Lookups</h3>
+              <div class="stat-number" id="countScans">0</div>
+            </div>
+            <div class="stat-icon-box purple">
+              <i class="fa-solid fa-qrcode"></i>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3>Active Accounts</h3>
+              <div class="stat-number" id="countUsers">0</div>
+            </div>
+            <div class="stat-icon-box green">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts panel layout -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Top Courses Certification</h3>
+            <div class="chart-container">
+              <canvas id="courseBarChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Certificate Validity Status</h3>
+            <div class="chart-container">
+              <canvas id="statusPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Actions -->
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Recent Verification Inquiries</h3>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Certificate ID</th>
+                  <th>Recipient</th>
+                  <th>Topic</th>
+                  <th>IP Address</th>
+                  <th>Verified Time</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody id="recentVerificationsTable">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted);">No activity logged yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Certificates Management Section -->
+      <section class="tab-section" id="tab-certificates" style="display: none;">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="certSearchInput" placeholder="Search by ID, name or email...">
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <a href="/api/certificates/export/csv" class="btn btn-secondary" id="exportReportBtn">
+                <i class="fa-solid fa-file-export"></i> Export Report
+              </a>
+              <button class="btn btn-primary" id="openIssueModalBtn">
+                <i class="fa-solid fa-circle-plus"></i> Issue Certificate
+              </button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Certificate ID</th>
+                  <th>Recipient Name</th>
+                  <th>Course Title</th>
+                  <th>Issue Date</th>
+                  <th>Verification Hits</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="certificatesListTable">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading certificate database...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <div class="pagination-info" id="paginationInfo">Showing 0 to 0 of 0 logs</div>
+            <div class="pagination-btn-group">
+              <button class="pagination-btn" id="prevPageBtn" disabled><i class="fa-solid fa-angle-left"></i> Previous</button>
+              <button class="pagination-btn" id="nextPageBtn" disabled>Next <i class="fa-solid fa-angle-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bulk Issuance CSV uploading Section -->
+      <section class="tab-section" id="tab-bulk" style="display: none;">
+        <div class="chart-card" style="max-width: 700px; margin: 0 auto;">
+          <h3>CSV Bulk Upload Panel</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+            Quickly generate credentials in bulk. Upload a CSV file matching this structured schema layout. 
+            <a href="#" id="downloadCsvTemplateBtn" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">Download CSV Template</a>
+          </p>
+          
+          <form id="bulkUploadForm">
+            <div class="dropzone" id="csvDropzone">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+              </svg>
+              <div class="dropzone-text">Click to select or drag and drop a <strong>.csv</strong> file here</div>
+              <div class="dropzone-file-name" id="csvFileName"></div>
+              <input type="file" id="bulkCsvInput" accept=".csv" style="display: none;" required>
+            </div>
+            <button type="submit" class="btn btn-primary submit-btn" style="margin-top: 1.5rem;">
+              <i class="fa-solid fa-file-import"></i> Upload and Issue Batch
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Sub-Admin Profiles Setup Section -->
+      <section class="tab-section" id="tab-users" style="display: none;">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Administrative Profile Listings</h3>
+            <button class="btn btn-primary" id="openUserModalBtn">
+              <i class="fa-solid fa-user-plus"></i> Add Admin
+            </button>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Account Status</th>
+                  <th>Permissions</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersListTable">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading admin database...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Branding Template Customization Section -->
+      <section class="tab-section" id="tab-branding" style="display: none;">
+        <div class="chart-card" style="max-width: 800px; margin: 0 auto;">
+          <h3>Branding & Design Setup</h3>
+          <p style="color: var(--text-muted); margin-bottom: 2rem;">Configure color palettes, institution seals, or border properties of the generated PDF certificates.</p>
+          
+          <form id="brandingTemplateForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="brandPrimaryColor">Primary Accent Color</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="color" id="brandPrimaryColor" value="#2563eb" style="width: 50px; height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); cursor: pointer;">
+                  <input type="text" id="brandPrimaryHex" class="form-control" value="#2563eb" placeholder="#2563eb">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="brandSecondaryColor">Secondary Accent Color</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="color" id="brandSecondaryColor" value="#7c3aed" style="width: 50px; height: 42px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); cursor: pointer;">
+                  <input type="text" id="brandSecondaryHex" class="form-control" value="#7c3aed" placeholder="#7c3aed">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Institution Seal Logo (PNG/JPG)</label>
+                <div class="dropzone" id="logoDropzone" style="padding: 1.25rem;">
+                  <i class="fa-solid fa-image fa-2x" style="color: var(--text-muted);"></i>
+                  <div class="dropzone-text" style="font-size: 0.8rem;">Drop logo image file</div>
+                  <div class="dropzone-file-name" id="logoFileName" style="font-size: 0.8rem;"></div>
+                  <input type="file" id="brandLogoInput" accept="image/*" style="display: none;">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Background Certificate Backdrop (PNG/JPG)</label>
+                <div class="dropzone" id="bgDropzone" style="padding: 1.25rem;">
+                  <i class="fa-solid fa-file-image fa-2x" style="color: var(--text-muted);"></i>
+                  <div class="dropzone-text" style="font-size: 0.8rem;">Drop background template</div>
+                  <div class="dropzone-file-name" id="bgFileName" style="font-size: 0.8rem;"></div>
+                  <input type="file" id="brandBgInput" accept="image/*" style="display: none;">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="brandCustomText">Certificate Standard Declaration (Description Text)</label>
+              <textarea id="brandCustomText" rows="3" class="form-control" placeholder="has successfully fulfilled the qualifications and completing all criteria for the course..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary submit-btn">
+              <i class="fa-solid fa-floppy-disk"></i> Save Branding Settings
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Audit Trails Log History Section -->
+      <section class="tab-section" id="tab-audit" style="display: none;">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Administrative Action Logs</h3>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Administrator</th>
+                  <th>Action performed</th>
+                  <th>Target Type</th>
+                  <th>Target ID</th>
+                  <th>Network IP</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogsTable">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted);">Loading audit trails...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- Modal: Issue Certificate Form -->
+  <div class="modal-overlay" id="issueCertModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Issue New Credential</h2>
+        <button class="modal-close" id="closeIssueModal"><i class="fa-solid fa-xmark fa-xl"></i></button>
+      </div>
+      <form id="issueCertForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="recipientNameInput">Recipient Name</label>
+            <input type="text" id="recipientNameInput" class="form-control" placeholder="Jane Doe" required>
+          </div>
+          <div class="form-group">
+            <label for="recipientEmailInput">Recipient Email Address</label>
+            <input type="email" id="recipientEmailInput" class="form-control" placeholder="jane.doe@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="courseNameInput">Course Name / Title</label>
+            <input type="text" id="courseNameInput" class="form-control" placeholder="Advanced Full Stack Engineering" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="orgInput">Issuing Organization</label>
+              <input type="text" id="orgInput" class="form-control" value="Digital Certification Authority">
+            </div>
+            <div class="form-group">
+              <label for="expiryDateInput">Expiration Date (Optional)</label>
+              <input type="date" id="expiryDateInput" class="form-control">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelIssueBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Generate Credential</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Certificate Form -->
+  <div class="modal-overlay" id="editCertModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Edit Certificate Registry Entry</h2>
+        <button class="modal-close" id="closeEditModal"><i class="fa-solid fa-xmark fa-xl"></i></button>
+      </div>
+      <form id="editCertForm">
+        <input type="hidden" id="editCertIdHidden">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editRecipientNameInput">Recipient Name</label>
+            <input type="text" id="editRecipientNameInput" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="editRecipientEmailInput">Recipient Email Address</label>
+            <input type="email" id="editRecipientEmailInput" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="editCourseNameInput">Course Name / Title</label>
+            <input type="text" id="editCourseNameInput" class="form-control" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editOrgInput">Issuing Organization</label>
+              <input type="text" id="editOrgInput" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="editStatusInput">Registry Status</label>
+              <select id="editStatusInput" class="form-control">
+                <option value="Valid">Valid</option>
+                <option value="Revoked">Revoked</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Admin User Form -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Create Admin Account</h2>
+        <button class="modal-close" id="closeUserModal"><i class="fa-solid fa-xmark fa-xl"></i></button>
+      </div>
+      <form id="createUserForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="newUsernameInput">Username</label>
+            <input type="text" id="newUsernameInput" class="form-control" placeholder="AdminUsername" required>
+          </div>
+          <div class="form-group">
+            <label for="newEmailInput">Email Address</label>
+            <input type="email" id="newEmailInput" class="form-control" placeholder="admin@domain.com" required>
+          </div>
+          <div class="form-group">
+            <label for="newPasswordInput">Password</label>
+            <input type="password" id="newPasswordInput" class="form-control" placeholder="Minimum 6 characters" required>
+          </div>
+          <div class="form-group">
+            <label for="newRoleInput">Administrative Role</label>
+            <select id="newRoleInput" class="form-control">
+              <option value="Admin">Admin (Can Issue/Revoke)</option>
+              <option value="Viewer">Viewer (Read-only access)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelUserBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Javascript Dashboard Execution -->
+  <script src="js/auth.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>

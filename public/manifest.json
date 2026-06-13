@@ -1,0 +1,22 @@
+{
+  "name": "CertiVerify - Digital Credentials Portal",
+  "short_name": "CertiVerify",
+  "description": "Secure, instant digital certificate issuance and verification registry dashboard.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1006/1006117.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1006/1006117.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

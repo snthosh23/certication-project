@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Verification Portal - Verify Certificates Instantly</title>
+  <meta name="description" content="Secure, instant certificate verification and lookup registry built for modern institutions. Verify authenticity online.">
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- QR Code Scanning Library -->
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+</head>
+<body>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+        </svg>
+        <span>CertiVerify</span>
+      </a>
+      
+      <button class="menu-btn" id="menuToggle" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link active">Home</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#history" class="nav-link">Recent Verifications</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Light / Dark Mode Toggle -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+          <svg class="moon-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+          <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.46 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+        </button>
+        <a href="login.html" class="btn btn-secondary">Admin Login</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero">
+      <span class="hero-tag">Secure Validation Registry</span>
+      <h1>Instant Verification System for Smart Credentials</h1>
+      <p>Verify certificate authenticity securely. Search registry databases by Unique Identification Key or scan the certificate's verification QR Code.</p>
+
+      <!-- Glassmorphic search and QR scan container -->
+      <div class="search-container">
+        <div class="search-tabs">
+          <button class="search-tab active" id="tabId">Search by Certificate ID</button>
+          <button class="search-tab" id="tabQr">Scan QR Code</button>
+        </div>
+
+        <!-- ID Search Box -->
+        <div class="search-box" id="idSearchSection">
+          <div class="search-input-wrapper">
+            <input type="text" id="certIdInput" class="search-input" placeholder="Enter Certificate ID (e.g. CERT-JWK4R-5X2S)...">
+          </div>
+          <button class="btn btn-primary search-btn" id="verifyBtn">
+            <i class="fa-solid fa-shield-halved"></i> Verify Now
+          </button>
+        </div>
+
+        <!-- Camera Scanner Box -->
+        <div class="scanner-area" id="qrScannerSection">
+          <div class="scanner-video-container">
+            <div id="qr-reader" style="width: 100%; height: 100%;"></div>
+          </div>
+          <button class="btn btn-secondary" id="stopScannerBtn">
+            <i class="fa-solid fa-video-slash"></i> Stop Camera Scanner
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="features-header">
+        <h2>Built with Enterprise Grade Security</h2>
+        <p style="color: var(--text-muted);">Secure verification pipeline connecting institutions and employers.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-cube fa-xl"></i>
+          </div>
+          <h3>Cryptographic IDs</h3>
+          <p>Each document is generated with a cryptographically unique identifier mapping to its database entry, preventing template forgery.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-qrcode fa-xl"></i>
+          </div>
+          <h3>Scan and Validate</h3>
+          <p>Embed smart QR codes directly onto your PDF certificates. Scan with mobile cameras to instantly fetch real-time verification details.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-receipt fa-xl"></i>
+          </div>
+          <h3>PWA Offline Capability</h3>
+          <p>Install the application on your mobile device as a Progressive Web App (PWA) to quickly access and search verification logs even when offline.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Verifications Timeline -->
+    <section class="features" id="history">
+      <div class="features-header">
+        <h2>Recent Verification Activities</h2>
+        <p style="color: var(--text-muted);">Real-time log of public credential validation queries.</p>
+      </div>
+      
+      <div class="search-container" style="max-width: 900px; padding: 1.5rem;">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Certificate ID</th>
+                <th>Status Checked</th>
+                <th>Time Verified</th>
+                <th>Client Platform</th>
+              </tr>
+            </thead>
+            <tbody id="publicLogsBody">
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted);">Loading recent activity feed...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">CertiVerify Portal</div>
+      <div class="footer-text">&copy; 2026 CertiVerify System. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <!-- Frontend Logic Script -->
+  <script src="js/app.js" defer></script>
+</body>
+</html>
