@@ -484,6 +484,21 @@ tr:last-child td {
   font-size: 1.5rem;
 }
 
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 85;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .sidebar-toggle {
     display: block;
@@ -495,6 +510,11 @@ tr:last-child td {
   
   .sidebar.open {
     left: 0;
+  }
+
+  .sidebar.open + .sidebar-overlay {
+    display: block;
+    opacity: 1;
   }
 
   .main-content {

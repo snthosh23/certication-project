@@ -497,7 +497,30 @@ footer {
   font-size: 1.5rem;
 }
 
+.mobile-only {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+  
+  .nav-menu .mobile-only {
+    display: block !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-glass);
+    width: 100%;
+    text-align: center;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+
   .menu-btn {
     display: block;
   }

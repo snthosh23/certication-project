@@ -42,6 +42,14 @@ function initMobileNav() {
         icon.className = 'fa-solid fa-bars';
       }
     });
+
+    // Close menu when clicking links
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('open');
+        menuToggle.querySelector('i').className = 'fa-solid fa-bars';
+      });
+    });
   }
 }
 

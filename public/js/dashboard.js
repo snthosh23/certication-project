@@ -4,8 +4,13 @@ let currentUser = null;
 let currentCertificatesPage = 1;
 let currentCertificatesTotalPages = 1;
 let certificatesSearchQuery = '';
+let certificatesStatusFilter = '';
+let certificatesCourseFilter = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Theme
+  initTheme();
+
   // Guard Check
   if (!isAuthenticated()) {
     window.location.href = 'login.html';
@@ -36,15 +41,44 @@ document.addEventListener('DOMContentLoaded', () => {
   // Audit logs tab
   initAuditTab();
 
-  // Mobile Menu toggles
+  // Mobile Menu toggles and overlay handler
   const sbToggle = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
   if (sbToggle && sidebar) {
     sbToggle.addEventListener('click', () => {
       sidebar.classList.toggle('open');
     });
   }
+  if (sidebarOverlay && sidebar) {
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+    });
+  }
 });
+
+// Theme Configuration (Light / Dark Mode)
+function initTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  if (!themeToggle) return;
+
+  const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  themeToggle.addEventListener('click', () => {
+    let theme = document.documentElement.getAttribute('data-theme');
+    let targetTheme = theme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', targetTheme);
+    localStorage.setItem('theme', targetTheme);
+
+    // Re-render charts with new theme colors if on overview tab
+    const overviewTab = document.getElementById('tab-overview');
+    if (overviewTab && overviewTab.style.display !== 'none') {
+      loadOverviewData();
+    }
+  });
+}
 
 // 1. User Profile Setup
 async function loadUserProfile() {
@@ -98,7 +132,10 @@ function initDashboardTabs() {
 
       // Reload appropriate tab data on view switch
       if (tabId === 'tab-overview') loadOverviewData();
-      if (tabId === 'tab-certificates') loadCertificates(1);
+      if (tabId === 'tab-certificates') {
+        loadCourseFilterOptions();
+        loadCertificates(1);
+      }
       if (tabId === 'tab-users') loadUsers();
       if (tabId === 'tab-audit') loadAuditLogs(1);
 
@@ -173,6 +210,12 @@ function renderOverviewCharts(chartData) {
   const hasCourses = chartData.courseBreakdown && chartData.courseBreakdown.length > 0;
   const hasStatus = chartData.statusBreakdown.valid > 0 || chartData.statusBreakdown.revoked > 0;
 
+  // Determine current theme colors
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? '#cbd5e1' : '#475569';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+  const borderColor = isDark ? '#0f172a' : '#ffffff';
+
   // Render Bar Chart (Top Courses)
   courseChartInstance = new Chart(barCtx, {
     type: 'bar',
@@ -190,9 +233,21 @@ function renderOverviewCharts(chartData) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: textColor }
+        }
+      },
       scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-        x: { grid: { display: false } }
+        y: { 
+          beginAtZero: true, 
+          grid: { color: gridColor },
+          ticks: { color: textColor }
+        },
+        x: { 
+          grid: { display: false },
+          ticks: { color: textColor }
+        }
       }
     }
   });
@@ -205,14 +260,18 @@ function renderOverviewCharts(chartData) {
       datasets: [{
         data: hasStatus ? [chartData.statusBreakdown.valid, chartData.statusBreakdown.revoked] : [1, 0],
         backgroundColor: ['#10b981', '#ef4444'],
-        borderWidth: 2
+        borderWidth: 2,
+        borderColor: borderColor
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' }
+        legend: { 
+          position: 'bottom',
+          labels: { color: textColor }
+        }
       }
     }
   });
@@ -227,10 +286,26 @@ function initCertificatesTab() {
   const issueForm = document.getElementById('issueCertForm');
   const issueModal = document.getElementById('issueCertModal');
 
-  // Search filter listener
+  // Search and filter listeners
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       certificatesSearchQuery = e.target.value;
+      loadCertificates(1);
+    });
+  }
+
+  const statusFilter = document.getElementById('certStatusFilter');
+  if (statusFilter) {
+    statusFilter.addEventListener('change', (e) => {
+      certificatesStatusFilter = e.target.value;
+      loadCertificates(1);
+    });
+  }
+
+  const courseFilter = document.getElementById('certCourseFilter');
+  if (courseFilter) {
+    courseFilter.addEventListener('change', (e) => {
+      certificatesCourseFilter = e.target.value;
       loadCertificates(1);
     });
   }
@@ -353,7 +428,7 @@ async function loadCertificates(page) {
 
   try {
     const token = getAuthToken();
-    const res = await fetch(`/api/certificates?page=${page}&limit=8&search=${encodeURIComponent(certificatesSearchQuery)}`, {
+    const res = await fetch(`/api/certificates?page=${page}&limit=8&search=${encodeURIComponent(certificatesSearchQuery)}&status=${certificatesStatusFilter}&course=${encodeURIComponent(certificatesCourseFilter)}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
@@ -789,4 +864,33 @@ async function loadAuditLogs(page) {
 
 function initAuditTab() {
   // Add pagination for audit logs if desired, but defaults to single page load for dashboard MVP simplicity.
+}
+
+async function loadCourseFilterOptions() {
+  try {
+    const token = getAuthToken();
+    const res = await fetch('/api/certificates?limit=100', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && data.certificates) {
+      const courses = [...new Set(data.certificates.map(c => c.courseName))].sort();
+      const courseFilterDropdown = document.getElementById('certCourseFilter');
+      if (courseFilterDropdown) {
+        const currentSelected = certificatesCourseFilter;
+        courseFilterDropdown.innerHTML = '<option value="">All Courses</option>';
+        courses.forEach(course => {
+          const opt = document.createElement('option');
+          opt.value = course;
+          opt.innerText = course;
+          if (course === currentSelected) {
+            opt.selected = true;
+          }
+          courseFilterDropdown.appendChild(opt);
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load courses for filter:', err);
+  }
 }

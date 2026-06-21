@@ -68,6 +68,9 @@
       </div>
     </aside>
 
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Main Content Area -->
     <main class="main-content">
       
@@ -168,10 +171,21 @@
       <!-- Certificates Management Section -->
       <section class="tab-section" id="tab-certificates" style="display: none;">
         <div class="table-card">
-          <div class="table-header">
-            <div class="table-search">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="certSearchInput" placeholder="Search by ID, name or email...">
+          <div class="table-header" style="gap: 1rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1; min-width: 280px;">
+              <div class="table-search" style="flex: 1; min-width: 200px;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="certSearchInput" placeholder="Search by ID, name or email..." style="width: 100%;">
+              </div>
+              <select id="certStatusFilter" class="form-control" style="width: 140px; padding: 0.5rem 0.75rem; height: 42px;">
+                <option value="">All Statuses</option>
+                <option value="Valid">Valid</option>
+                <option value="Revoked">Revoked</option>
+                <option value="Expired">Expired</option>
+              </select>
+              <select id="certCourseFilter" class="form-control" style="width: 180px; padding: 0.5rem 0.75rem; height: 42px;">
+                <option value="">All Courses</option>
+              </select>
             </div>
             <div style="display: flex; gap: 0.75rem;">
               <a href="/api/certificates/export/csv" class="btn btn-secondary" id="exportReportBtn">
