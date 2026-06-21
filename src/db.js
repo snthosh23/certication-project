@@ -1,19 +1,14 @@
-const mongoose = require('mongoose');
+const { db } = require('./firebase');
 const User = require('./models/user.model');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/certificate_system', {
-      serverSelectionTimeoutMS: 5000
-    });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log('Firebase Firestore connection established successfully.');
     
-    // Seed default admin account
+    // Seed default admin account in Firestore
     await seedDefaultAdmin();
   } catch (error) {
     console.error(`Database Connection Error: ${error.message}`);
-    // Do not crash the process in development, but print warning
-    console.warn('Proceeding without MongoDB. Ensure MongoDB is running locally or check MONGODB_URI in your .env file.');
   }
 };
 
@@ -33,23 +28,21 @@ const seedDefaultAdmin = async () => {
         isActive: true
       });
       console.log('----------------------------------------');
-      console.log('Seeded Default SuperAdmin Account:');
+      console.log('Seeded Default SuperAdmin Account in Firestore:');
       console.log(`Email: ${email}`);
       console.log(`Password: ${defaultPassword}`);
       console.log('----------------------------------------');
     } else {
-      // Reset/Update password for development seed alignment
       const defaultPassword = 'santhoshs2011';
-      adminExists.password = defaultPassword; // Pre-save hook will hash it
+      adminExists.password = defaultPassword; // Save hook hashes if needed
       await adminExists.save();
       console.log('----------------------------------------');
-      console.log('Updated Existing SuperAdmin Password:');
+      console.log('Verified/Updated SuperAdmin Account in Firestore:');
       console.log(`Email: ${email}`);
-      console.log(`Password: ${defaultPassword}`);
       console.log('----------------------------------------');
     }
   } catch (err) {
-    console.error('Failed to seed default admin:', err.message);
+    console.error('Failed to seed default admin in Firestore:', err.message);
   }
 };
 

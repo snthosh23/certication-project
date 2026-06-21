@@ -1,36 +1,11 @@
-const mongoose = require('mongoose');
+const FirestoreModel = require('./firestoreModel');
 
-const verificationLogSchema = new mongoose.Schema(
-  {
-    certificateId: {
-      type: String,
-      required: true,
-      index: true
-    },
-    certificateRef: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Certificate'
-    },
-    ipAddress: {
-      type: String,
-      default: 'Unknown'
-    },
-    userAgent: {
-      type: String,
-      default: 'Unknown'
-    },
-    status: {
-      type: String,
-      enum: ['Success', 'Failed'],
-      required: true
-    },
-    details: {
-      type: String
-    }
-  },
-  {
-    timestamps: { createdAt: 'timestamp', updatedAt: false }
+class VerificationLog extends FirestoreModel {
+  constructor(data = {}) {
+    super('verificationlogs', data, data._id || data.id || null);
   }
-);
+}
 
-module.exports = mongoose.model('VerificationLog', verificationLogSchema);
+VerificationLog.collectionName = 'verificationlogs';
+
+module.exports = VerificationLog;

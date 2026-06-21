@@ -29,27 +29,32 @@
     }
     
     .status-banner:hover {
+      transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
     }
 
     .status-banner.valid {
       background: rgba(16, 185, 129, 0.08);
-      border-color: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
     }
 
     .status-banner.revoked {
       background: rgba(239, 68, 68, 0.08);
-      border-color: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(239, 68, 68, 0.15);
     }
 
     .status-banner.expired {
       background: rgba(245, 158, 11, 0.08);
-      border-color: rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.15);
     }
 
     .status-banner.invalid {
       background: rgba(100, 116, 139, 0.08);
-      border-color: rgba(100, 116, 139, 0.2);
+      border-color: rgba(100, 116, 139, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(100, 116, 139, 0.15);
     }
     
     .status-icon {
@@ -82,6 +87,12 @@
       box-shadow: var(--shadow-sm);
       overflow: hidden;
       margin-bottom: 2rem;
+      transition: var(--transition);
+    }
+
+    .cert-details-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
     }
     
     .cert-details-header {
@@ -137,6 +148,9 @@
   </style>
 </head>
 <body>
+  <!-- Animated Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
   <!-- Header Navigation -->
   <header>

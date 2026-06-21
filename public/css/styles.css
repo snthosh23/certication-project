@@ -268,6 +268,37 @@ header {
   margin: 0 auto 3rem;
 }
 
+/* Floating Glow Orbs background */
+.orb {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
+  animation: floatOrb 15s infinite ease-in-out alternate;
+}
+
+.orb-1 {
+  background: radial-gradient(circle, var(--color-primary), transparent 70%);
+  top: 15%;
+  left: -5%;
+}
+
+.orb-2 {
+  background: radial-gradient(circle, var(--color-secondary), transparent 70%);
+  bottom: 10%;
+  right: -5%;
+  animation-delay: -7.5s;
+}
+
+@keyframes floatOrb {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  100% { transform: translateY(-50px) scale(1.15) rotate(90deg); }
+}
+
 /* Glassmorphism verification Search Card */
 .search-container {
   max-width: 720px;
@@ -275,16 +306,37 @@ header {
   padding: 2.5rem;
   border-radius: var(--radius-lg);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-glass);
   box-shadow: var(--shadow-glass);
-  transition: var(--transition);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), box-shadow 0.4s ease, border-color 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .search-container:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px -15px rgba(var(--color-primary-rgb), 0.15);
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+}
+
+.search-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 180deg, transparent 40%, rgba(var(--color-primary-rgb), 0.1), rgba(124, 58, 237, 0.1), transparent 60%);
+  animation: borderRotate 15s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes borderRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .search-tabs {
@@ -391,12 +443,12 @@ header {
   border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   border: 1px solid var(--border-glass);
-  transition: var(--transition);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), box-shadow 0.4s ease, border-color 0.4s ease;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px -15px rgba(var(--color-primary-rgb), 0.15);
   border-color: var(--color-primary);
 }
 
