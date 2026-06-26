@@ -17,15 +17,17 @@
     }
     
     .status-banner {
-      padding: 2.5rem;
+      padding: 3rem 2rem;
       border-radius: var(--radius-lg);
       text-align: center;
       margin-bottom: 2rem;
       border: 1px solid var(--border-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       box-shadow: var(--shadow-glass);
       transition: var(--transition);
+      position: relative;
+      overflow: hidden;
     }
     
     .status-banner:hover {
@@ -34,33 +36,35 @@
     }
 
     .status-banner.valid {
-      background: rgba(16, 185, 129, 0.08);
+      background: rgba(16, 185, 129, 0.06);
       border-color: rgba(16, 185, 129, 0.25);
       box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
     }
 
     .status-banner.revoked {
-      background: rgba(239, 68, 68, 0.08);
+      background: rgba(239, 68, 68, 0.06);
       border-color: rgba(239, 68, 68, 0.25);
       box-shadow: 0 10px 30px -10px rgba(239, 68, 68, 0.15);
     }
 
     .status-banner.expired {
-      background: rgba(245, 158, 11, 0.08);
+      background: rgba(245, 158, 11, 0.06);
       border-color: rgba(245, 158, 11, 0.25);
       box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.15);
     }
 
     .status-banner.invalid {
-      background: rgba(100, 116, 139, 0.08);
-      border-color: rgba(100, 116, 139, 0.25);
-      box-shadow: 0 10px 30px -10px rgba(100, 116, 139, 0.15);
+      background: rgba(148, 163, 184, 0.06);
+      border-color: rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow-glass);
     }
     
     .status-icon {
       font-size: 3.5rem;
-      margin-bottom: 1rem;
-      animation: pulseIcon 2s infinite ease-in-out;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .status-banner.valid .status-icon { color: var(--success); }
@@ -70,21 +74,26 @@
     
     .status-title {
       font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
+      font-size: 1.95rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
     }
     
     .status-desc {
       color: var(--text-secondary);
       font-size: 1.05rem;
+      max-width: 580px;
+      margin: 0 auto;
     }
     
     .cert-details-card {
-      background: var(--bg-secondary);
+      background: var(--bg-glass);
       border-radius: var(--radius-lg);
       border: 1px solid var(--border-glass);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       overflow: hidden;
       margin-bottom: 2rem;
       transition: var(--transition);
@@ -93,57 +102,145 @@
     .cert-details-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
+      border-color: rgba(var(--color-primary-rgb), 0.2);
     }
     
     .cert-details-header {
       padding: 1.5rem 2rem;
       border-bottom: 1px solid var(--border-glass);
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.2rem;
+      font-weight: 800;
+      font-size: 1.3rem;
       background: rgba(var(--color-primary-rgb), 0.02);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
     
     .details-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
+      gap: 1.25rem;
       padding: 2rem;
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .details-grid {
         grid-template-columns: 1fr;
-        gap: 1.25rem;
+        gap: 1rem;
+        padding: 1.5rem;
       }
     }
     
+    .detail-item {
+      background: rgba(var(--color-primary-rgb), 0.01);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      transition: var(--transition);
+    }
+
+    .detail-item:hover {
+      background: rgba(var(--color-primary-rgb), 0.03);
+      transform: translateY(-2px);
+      border-color: rgba(var(--color-primary-rgb), 0.15);
+    }
+    
     .detail-item label {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.85rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      letter-spacing: 0.025em;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .detail-item label i {
+      font-size: 0.95rem;
+      color: var(--color-primary);
     }
     
     .detail-item span {
-      font-size: 1.05rem;
-      font-weight: 600;
+      font-size: 1.1rem;
+      font-weight: 700;
       color: var(--text-primary);
     }
     
     .actions-bar {
       display: flex;
-      gap: 1rem;
+      gap: 1.25rem;
       justify-content: center;
       flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    /* SVG Checkmark draw animation */
+    .checkmark-svg {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 4;
+      stroke: var(--success);
+      stroke-miterlimit: 10;
+      box-shadow: inset 0px 0px 0px var(--success);
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      margin-bottom: 0.5rem;
     }
     
-    @keyframes pulseIcon {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 4;
+      stroke-miterlimit: 10;
+      stroke: var(--success);
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke: var(--success);
+      fill: none;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    /* Pulse/bounce animations for other states */
+    .pulse-icon-warning {
+      animation: pulseIconW 2s infinite ease-in-out;
+    }
+    
+    .pulse-icon-danger {
+      animation: pulseIconD 2s infinite ease-in-out;
+    }
+
+    @keyframes stroke {
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    @keyframes scale {
+      0%, 100% { transform: none; }
+      50% { transform: scale3d(1.15, 1.15, 1); }
+    }
+    
+    @keyframes fill {
+      100% { box-shadow: inset 0px 0px 0px 36px rgba(16, 185, 129, 0.08); }
+    }
+
+    @keyframes pulseIconW {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.3)); }
+    }
+
+    @keyframes pulseIconD {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(239, 68, 68, 0)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3)); }
     }
   </style>
 </head>
@@ -182,38 +279,40 @@
 
     <!-- 2. Detailed Certificate fields registry data -->
     <div id="certDetailsCard" class="cert-details-card" style="display: none;">
-      <div class="cert-details-header">Certificate Registry Entry</div>
+      <div class="cert-details-header">
+        <i class="fa-solid fa-shield-halved" style="color: var(--color-primary);"></i> Certificate Registry Verification Entry
+      </div>
       <div class="details-grid">
         <div class="detail-item">
-          <label>Certificate ID</label>
+          <label><i class="fa-solid fa-key"></i> Certificate ID</label>
           <span id="fieldCertId">-</span>
         </div>
         <div class="detail-item">
-          <label>Recipient Name</label>
+          <label><i class="fa-solid fa-user"></i> Recipient Name</label>
           <span id="fieldName">-</span>
         </div>
         <div class="detail-item">
-          <label>Course / Title</label>
+          <label><i class="fa-solid fa-book"></i> Course / Title</label>
           <span id="fieldCourse">-</span>
         </div>
         <div class="detail-item">
-          <label>Organization / Issuer</label>
+          <label><i class="fa-solid fa-building"></i> Organization / Issuer</label>
           <span id="fieldOrg">-</span>
         </div>
         <div class="detail-item">
-          <label>Date of Issue</label>
+          <label><i class="fa-solid fa-calendar-days"></i> Date of Issue</label>
           <span id="fieldIssueDate">-</span>
         </div>
         <div class="detail-item">
-          <label>Expiry Date</label>
+          <label><i class="fa-solid fa-calendar-xmark"></i> Expiry Date</label>
           <span id="fieldExpiryDate">Never</span>
         </div>
         <div class="detail-item">
-          <label>Issuer Authority</label>
+          <label><i class="fa-solid fa-id-card"></i> Issuer Authority</label>
           <span id="fieldIssuer">-</span>
         </div>
         <div class="detail-item">
-          <label>Verification Scans</label>
+          <label><i class="fa-solid fa-chart-line"></i> Verification Scans</label>
           <span id="fieldScans">0</span>
         </div>
       </div>
@@ -270,7 +369,7 @@
     function showInvalidBanner(title, desc) {
       const banner = document.getElementById('statusBanner');
       banner.className = "status-banner revoked"; // styles like error
-      banner.querySelector('.status-icon').innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+      banner.querySelector('.status-icon').innerHTML = '<i class="fa-solid fa-circle-xmark pulse-icon-danger"></i>';
       document.getElementById('statusTitle').innerText = title;
       document.getElementById('statusDesc').innerText = desc;
     }
@@ -283,17 +382,22 @@
       
       if (isValid) {
         banner.className = "status-banner valid";
-        icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        icon.innerHTML = `
+          <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        `;
         title.innerText = "Authentic Certificate";
         desc.innerText = "This digital credential has been verified as valid and issued by an authorized registry.";
       } else if (status === 'Revoked') {
         banner.className = "status-banner revoked";
-        icon.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
+        icon.innerHTML = '<i class="fa-solid fa-circle-minus pulse-icon-danger"></i>';
         title.innerText = "Revoked Certificate";
         desc.innerText = "This credential was issued but has subsequently been revoked by the issuer.";
       } else if (status === 'Expired') {
         banner.className = "status-banner expired";
-        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation pulse-icon-warning"></i>';
         title.innerText = "Expired Certificate";
         desc.innerText = "This digital credential has expired and is no longer valid.";
       }
@@ -303,9 +407,9 @@
       document.getElementById('fieldName').innerText = cert.recipientName;
       document.getElementById('fieldCourse').innerText = cert.courseName;
       document.getElementById('fieldOrg').innerText = cert.organization;
-      document.getElementById('fieldIssueDate').innerText = new Date(cert.issueDate).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
+      document.getElementById('fieldIssueDate').innerText = cert.issueDate 
+        ? new Date(cert.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'Unknown Date';
       document.getElementById('fieldExpiryDate').innerText = cert.expiryDate 
         ? new Date(cert.expiryDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
         : 'Never (Lifetime Validity)';
@@ -324,13 +428,27 @@
       shareBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(window.location.href);
         
+        // Show Success state on button
+        const originalHtml = shareBtn.innerHTML;
+        shareBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Copied!';
+        shareBtn.style.background = 'var(--success)';
+        shareBtn.style.color = '#fff';
+        shareBtn.style.borderColor = 'var(--success)';
+        
         // Show Toast Notification
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = 'toast success';
         toast.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verification URL copied to clipboard!';
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        
+        setTimeout(() => {
+          shareBtn.innerHTML = originalHtml;
+          shareBtn.style.background = '';
+          shareBtn.style.color = '';
+          shareBtn.style.borderColor = '';
+          toast.remove();
+        }, 2500);
       });
     }
   </script>

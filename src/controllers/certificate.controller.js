@@ -50,9 +50,12 @@ exports.issueCertificate = async (req, res, next) => {
       courseName,
       organization: organization || 'Digital Certification Authority',
       expiryDate: expiryDate || null,
+      issueDate: new Date(),
       qrCodeUrl,
       issuedBy: req.user._id,
-      templateConfig: finalTemplate
+      templateConfig: finalTemplate,
+      status: 'Valid',
+      verificationCount: 0
     });
 
     // Create Audit Log
@@ -139,6 +142,9 @@ exports.bulkIssueCertificates = async (req, res, next) => {
         organization,
         qrCodeUrl,
         issuedBy: req.user._id,
+        status: 'Valid',
+        issueDate: new Date(),
+        verificationCount: 0,
         templateConfig: {
           templateId: 'default',
           backgroundColor: '#ffffff',
@@ -320,11 +326,12 @@ exports.verifyCertificate = async (req, res, next) => {
     }
 
     // Increment verification count
-    cert.verificationCount += 1;
+    cert.verificationCount = (cert.verificationCount || 0) + 1;
     await cert.save();
 
     const isExpired = cert.expiryDate ? new Date(cert.expiryDate) < new Date() : false;
-    const isValid = cert.status === 'Valid' && !isExpired;
+    const currentStatus = cert.status || 'Valid';
+    const isValid = currentStatus === 'Valid' && !isExpired;
 
     // Log verification hit
     await VerificationLog.create({
@@ -339,16 +346,16 @@ exports.verifyCertificate = async (req, res, next) => {
     res.status(200).json({
       success: true,
       valid: isValid,
-      status: isExpired ? 'Expired' : cert.status,
+      status: isExpired ? 'Expired' : currentStatus,
       certificate: {
         certificateId: cert.certificateId,
         recipientName: cert.recipientName,
         courseName: cert.courseName,
         organization: cert.organization,
-        issueDate: cert.issueDate,
+        issueDate: cert.issueDate || cert.createdAt,
         expiryDate: cert.expiryDate,
         qrCodeUrl: cert.qrCodeUrl,
-        verificationCount: cert.verificationCount,
+        verificationCount: cert.verificationCount || 0,
         issuedBy: cert.issuedBy?.username || 'System'
       }
     });

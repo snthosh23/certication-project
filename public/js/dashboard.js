@@ -445,8 +445,8 @@ async function loadCertificates(page) {
 
       if (data.certificates.length > 0) {
         data.certificates.forEach(c => {
-          const dateStr = new Date(c.issueDate).toLocaleDateString();
-          const badgeClass = c.status.toLowerCase();
+          const dateStr = new Date(c.issueDate || c.createdAt).toLocaleDateString();
+          const badgeClass = (c.status || 'Valid').toLowerCase();
           
           const isSuper = currentUser && currentUser.role === 'SuperAdmin';
           const delBtn = isSuper 
@@ -460,10 +460,10 @@ async function loadCertificates(page) {
             <td>${c.courseName}</td>
             <td>${dateStr}</td>
             <td>${c.verificationCount}</td>
-            <td><span class="badge ${badgeClass}">${c.status}</span></td>
+            <td><span class="badge ${badgeClass}">${c.status || 'Valid'}</span></td>
             <td>
               <div style="display: flex; gap: 0.4rem;">
-                <button class="pagination-btn" onclick="editCertificateClick('${c.certificateId}', '${c.recipientName}', '${c.recipientEmail}', '${c.courseName}', '${c.organization}', '${c.status}')"><i class="fa-solid fa-pen"></i></button>
+                <button class="pagination-btn" onclick="editCertificateClick('${c.certificateId}', '${c.recipientName}', '${c.recipientEmail}', '${c.courseName}', '${c.organization}', '${c.status || 'Valid'}')"><i class="fa-solid fa-pen"></i></button>
                 <button class="pagination-btn" onclick="emailCertificateClick('${c.certificateId}')" style="background: rgba(124,58,237,0.1); color: var(--color-secondary); border-color: rgba(124,58,237,0.2);" title="Email to Recipient"><i class="fa-solid fa-paper-plane"></i></button>
                 <a href="/api/certificates/download/${c.certificateId}" class="pagination-btn" style="background: rgba(37,99,235,0.1); color: var(--color-primary); border-color: rgba(37,99,235,0.2); display: inline-flex; align-items: center;" title="Download PDF"><i class="fa-solid fa-download"></i></a>
                 ${delBtn}

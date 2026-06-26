@@ -83,6 +83,7 @@ class FirestoreQueryBuilder {
     this._skip = 0;
     this._sort = null;
     this._populateFields = [];
+    this._isFindOne = false;
   }
 
   populate(field, selectFields) {
@@ -206,7 +207,11 @@ class FirestoreQueryBuilder {
     }
 
     // Map final entities to model constructor instances
-    return paginatedResults.map(item => new this.modelClass(item));
+    const mapped = paginatedResults.map(item => new this.modelClass(item));
+    if (this._isFindOne) {
+      return mapped.length > 0 ? mapped[0] : null;
+    }
+    return mapped;
   }
 
   // Thenable signature so builder can be directly awaited
@@ -228,6 +233,15 @@ class FirestoreModel {
     const dataToSave = { ...this };
     delete dataToSave._collectionName;
     delete dataToSave._id;
+
+    // Clean up populated objects so we don't save nested data back to Firestore
+    for (let key in dataToSave) {
+      if (dataToSave[key] && typeof dataToSave[key] === 'object') {
+        if (dataToSave[key]._id || dataToSave[key].id) {
+          dataToSave[key] = dataToSave[key]._id || dataToSave[key].id;
+        }
+      }
+    }
 
     // Handle automated timestamps
     const now = new Date();
@@ -279,20 +293,15 @@ class FirestoreModel {
   static findOne(queryObj = {}) {
     const builder = new FirestoreQueryBuilder(this.collectionName, this, queryObj);
     builder.limit(1);
-    
-    // Return a thenable for findOne returning a single object instead of array
-    return {
-      then: (onFulfilled, onRejected) => {
-        return builder.execute().then(results => {
-          return onFulfilled(results.length > 0 ? results[0] : null);
-        }, onRejected);
-      }
-    };
+    builder._isFindOne = true;
+    return builder;
   }
 
   static findById(id) {
     if (!id) {
       return {
+        select: function() { return this; }, // stub
+        populate: function() { return this; }, // stub
         then: (onFulfilled) => onFulfilled(null)
       };
     }
@@ -300,6 +309,7 @@ class FirestoreModel {
     
     return {
       select: function() { return this; }, // stub
+      populate: function() { return this; }, // stub
       then: (onFulfilled, onRejected) => {
         return getDoc(docRef).then(docSnap => {
           if (docSnap.exists()) {
